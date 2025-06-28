@@ -6,6 +6,8 @@ It answers questions like:
 - *When does the user look at the keyboard vs. the screen?*
 - *Which characters are hardest to type without looking?*
 - *How much time do they spend looking at the keyboard?*
+
+
 ![download (2)](https://github.com/user-attachments/assets/2e2c9b0d-238b-48fc-8633-ce24eeb78384)
 
 ---
