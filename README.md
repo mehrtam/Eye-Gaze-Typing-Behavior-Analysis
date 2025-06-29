@@ -143,7 +143,7 @@ Edit
 
 ## 📊 Example Outputs
 - ✅ CSV files with per-character analysis
-- ✅ Bar charts comparing typing in center vs right
+- ✅ Bar charts comparing typing in center vs right (in our dataset screen position setup leads to looking at right for user)
 - ✅ Hardest letters ranked by looking time
 - ✅ Pie chart of total keyboard vs screen time
 - ✅ Frame images with gaze arrows
