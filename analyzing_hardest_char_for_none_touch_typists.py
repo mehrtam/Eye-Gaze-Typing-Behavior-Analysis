@@ -69,7 +69,7 @@ for frame_file in sorted(glob.glob(f"{frames_folder}/*.png")):
 
 df = pd.DataFrame(data_rows)
 df.to_csv(output_csv, index=False)
-print(f"✅ Saved landmarks to {output_csv}")
+print(f" Saved landmarks to {output_csv}")
 
 import cv2
 import os
@@ -91,7 +91,7 @@ while success:
     success, frame = cap.read()
 
 cap.release()
-print(f"✅ Done! Extracted {frame_count} frames to {output_folder}")
+print(f" Done! Extracted {frame_count} frames to {output_folder}")
 
 frame_path = '/content/frames_output/frame_00010.png'
 
@@ -102,11 +102,11 @@ import matplotlib.pyplot as plt
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
-# ✅ Load the extracted image frame
+#  Load the extracted image frame
 image = cv2.imread(frame_path)
 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-# ✅ Run face mesh
+#  Run face mesh
 results = face_mesh.process(image_rgb)
 
 if results.multi_face_landmarks:
@@ -129,25 +129,25 @@ import cv2
 import glob
 import os
 
-# ✅ Setup
+#  Setup
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
 frames_folder = '/content/frames_output'    # Change if needed
 output_csv = '/content/landmarks_all_frames.csv'
 
-# ✅ Storage for all landmark rows
+#  Storage for all landmark rows
 all_rows = []
 
-# ✅ Process all frames
+#  Process all frames
 frame_files = sorted(glob.glob(os.path.join(frames_folder, '*.png')))
-print(f"✅ Found {len(frame_files)} frames to process.")
+print(f" Found {len(frame_files)} frames to process.")
 
 for frame_file in frame_files:
     frame_number = int(os.path.basename(frame_file).split('_')[1].split('.')[0])
     image = cv2.imread(frame_file)
     if image is None:
-        print(f"⚠️ Could not read {frame_file}")
+        print(f"⚠ Could not read {frame_file}")
         continue
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -163,35 +163,35 @@ for frame_file in frame_files:
                 "z": landmark.z
             })
 
-# ✅ Save all to CSV
+#  Save all to CSV
 df = pd.DataFrame(all_rows)
 df.to_csv(output_csv, index=False)
-print(f"✅ Saved all landmarks to {output_csv}")
+print(f" Saved all landmarks to {output_csv}")
 
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import mediapipe as mp
 
-# ✅ Mediapipe setup
+#  Mediapipe setup
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
-# ✅ Load ONE frame
+#  Load ONE frame
 frame_path = '/content/frames_output/frame_00010.png'
 image = cv2.imread(frame_path)
 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 h, w, _ = image.shape
 
-# ✅ Process with FaceMesh
+#  Process with FaceMesh
 results = face_mesh.process(image_rgb)
 
 if not results.multi_face_landmarks:
-    print("❗️ No face detected in this frame")
+    print(" No face detected in this frame")
 else:
     landmarks = results.multi_face_landmarks[0].landmark
 
-    # ✅ Define landmark IDs for pose estimation
+    #  Define landmark IDs for pose estimation
     LANDMARK_MAP = {
         "nose_tip": 1,
         "chin": 152,
@@ -201,7 +201,7 @@ else:
         "right_mouth": 57
     }
 
-    # ✅ Collect 2D image points
+    #  Collect 2D image points
     image_points = []
     for name, lid in LANDMARK_MAP.items():
         lm = landmarks[lid]
@@ -210,9 +210,9 @@ else:
         image_points.append([x, y])
 
     image_points = np.array(image_points, dtype=np.float64)
-    print("✅ 2D image points:\n", image_points)
+    print(" 2D image points:\n", image_points)
 
-    # ✅ Plot them on the face
+    #  Plot them on the face
     annotated = image.copy()
     for (x, y) in image_points:
         cv2.circle(annotated, (int(x), int(y)), 5, (0, 255, 0), -1)
@@ -223,7 +223,7 @@ else:
     plt.title('Pose landmarks on face')
     plt.show()
 
-    # ✅ Define 3D model points (approximate)
+    #  Define 3D model points (approximate)
     MODEL_POINTS = np.array([
         [0.0, 0.0, 0.0],       # Nose tip
         [0.0, -63.6, -12.5],   # Chin
@@ -233,7 +233,7 @@ else:
         [28.9, -28.9, -24.1],  # Right mouth
     ])
 
-    # ✅ Camera intrinsics (approximate)
+    #  Camera intrinsics (approximate)
     focal_length = w
     center = (w/2, h/2)
     camera_matrix = np.array([
@@ -244,7 +244,7 @@ else:
 
     dist_coeffs = np.zeros((4,1))
 
-    # ✅ Solve PnP
+    #  Solve PnP
     success, rotation_vector, translation_vector = cv2.solvePnP(
         MODEL_POINTS,
         image_points,
@@ -254,15 +254,15 @@ else:
     )
 
     if not success:
-        print("❗️ PnP failed.")
+        print(" PnP failed.")
     else:
-        print("✅ Rotation Vector:\n", rotation_vector)
-        print("✅ Translation Vector:\n", translation_vector)
+        print(" Rotation Vector:\n", rotation_vector)
+        print(" Translation Vector:\n", translation_vector)
 
-        # ✅ Convert rotation vector to rotation matrix
+        #  Convert rotation vector to rotation matrix
         rotation_matrix, _ = cv2.Rodrigues(rotation_vector)
 
-        # ✅ Get Euler angles (pitch, yaw, roll)
+        #  Get Euler angles (pitch, yaw, roll)
         sy = np.sqrt(rotation_matrix[0,0]**2 + rotation_matrix[1,0]**2)
         singular = sy < 1e-6
 
@@ -279,7 +279,7 @@ else:
         yaw = np.degrees(y)
         roll = np.degrees(z)
 
-        print(f"\n✅ Estimated angles:")
+        print(f"\n Estimated angles:")
         print(f"Pitch (up/down): {pitch:.2f}°")
         print(f"Yaw (left/right): {yaw:.2f}°")
         print(f"Roll (tilt): {roll:.2f}°")
@@ -288,10 +288,10 @@ import numpy as np
 import pandas as pd
 import cv2
 
-# ✅ Load landmark CSV
+#  Load landmark CSV
 df = pd.read_csv('/content/landmarks_all_frames.csv')
 
-# ✅ Define landmark IDs for pose estimation
+#  Define landmark IDs for pose estimation
 LANDMARK_MAP = {
     "nose_tip": 1,
     "chin": 152,
@@ -301,7 +301,7 @@ LANDMARK_MAP = {
     "right_mouth": 57
 }
 
-# ✅ 3D model points in *some canonical space* (these are approximations!)
+#  3D model points in *some canonical space* (these are approximations!)
 MODEL_POINTS = np.array([
     [0.0, 0.0, 0.0],       # Nose tip
     [0.0, -63.6, -12.5],   # Chin
@@ -311,7 +311,7 @@ MODEL_POINTS = np.array([
     [28.9, -28.9, -24.1],  # Right mouth
 ])
 
-# ✅ Results storage
+#  Results storage
 pose_results = []
 
 for frame_num in sorted(df['frame'].unique()):
@@ -383,25 +383,25 @@ for frame_num in sorted(df['frame'].unique()):
         "roll": roll
     })
 
-# ✅ Save head pose angles
+#  Save head pose angles
 pose_df = pd.DataFrame(pose_results)
 pose_df.to_csv('/content/head_pose_angles.csv', index=False)
-print(f"✅ Saved head pose angles to /content/head_pose_angles.csv")
+print(f" Saved head pose angles to /content/head_pose_angles.csv")
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# ✅ Load head pose data
+#  Load head pose data
 pose_df = pd.read_csv('/content/head_pose_angles.csv')
 
-# ✅ Print min and max pitch
+#  Print min and max pitch
 min_pitch = pose_df['pitch'].min()
 max_pitch = pose_df['pitch'].max()
 
-print(f"✅ Minimum pitch: {min_pitch:.2f}°")
-print(f"✅ Maximum pitch: {max_pitch:.2f}°")
+print(f" Minimum pitch: {min_pitch:.2f}°")
+print(f" Maximum pitch: {max_pitch:.2f}°")
 
-# ✅ Plot pitch over time
+#  Plot pitch over time
 plt.figure(figsize=(12, 6))
 plt.plot(pose_df['frame'], pose_df['pitch'], label='Pitch (up/down)', color='orange')
 plt.axhline(-20, color='red', linestyle='--', label='Keyboard threshold (-20°)')
@@ -412,7 +412,7 @@ plt.legend()
 plt.grid()
 plt.show()
 
-# ✅ Histogram to see distribution
+#  Histogram to see distribution
 plt.figure(figsize=(8, 5))
 plt.hist(pose_df['pitch'], bins=50, color='skyblue', edgecolor='black')
 plt.axvline(-20, color='red', linestyle='--', label='Keyboard threshold (-20°)')
@@ -425,18 +425,18 @@ plt.show()
 
 import pandas as pd
 
-# ✅ Load your head pose CSV
+#  Load your head pose CSV
 pose_df = pd.read_csv('/content/head_pose_angles.csv')
 
-# ✅ Adjusted threshold for MacBook Pro usage
+#  Adjusted threshold for MacBook Pro usage
 pose_df['label'] = pose_df['pitch'].apply(lambda x: 'keyboard' if x < -10 else 'screen')
 
-# ✅ Save labeled CSV
+#  Save labeled CSV
 pose_df.to_csv('/content/head_pose_labeled.csv', index=False)
-print("✅ Saved labeled head pose to /content/head_pose_labeled.csv")
+print(" Saved labeled head pose to /content/head_pose_labeled.csv")
 
-# ✅ Print label counts
-print("\n✅ Label distribution:")
+#  Print label counts
+print("\n Label distribution:")
 print(pose_df['label'].value_counts())
 
 
@@ -853,13 +853,13 @@ typing_with_pose = typing_with_pose.reset_index()
 typing_with_pose = typing_with_pose.dropna(subset=['pitch', 'yaw'])
 
 # ------------------------------------------
-# 4️ Save merged result
+# 4 Save merged result
 # ------------------------------------------
 typing_with_pose.to_csv('/content/typing_with_headpose_alignment.csv', index=False)
 print(" Saved merged typing+headpose file to /content/typing_with_headpose_alignment.csv")
 
 # ------------------------------------------
-# 5️ Show 5 samples for each gaze_direction
+# 5 Show 5 samples for each gaze_direction
 # ------------------------------------------
 for direction in ['left', 'center', 'right']:
     print(f"\n 5 samples for gaze_direction = {direction}:")
@@ -1007,7 +1007,7 @@ print(" typing_df index:", typing_df.index.dtype)
 
 
 # ================================
-# 2️ LOAD EYE GAZE PER FRAME DATA
+# 2 LOAD EYE GAZE PER FRAME DATA
 # ================================
 eye_df = pd.read_csv('/content/eye_gaze_per_frame.csv')
 print(f"\n Loaded eye_gaze_per_frame.csv with {len(eye_df)} rows")
@@ -1015,7 +1015,7 @@ print(" Columns:", eye_df.columns.tolist())
 
 
 # ================================
-# 3️ ADD SYNTHETIC frame_time TO EYE DATA
+# 3 ADD SYNTHETIC frame_time TO EYE DATA
 # ================================
 fps = 30
 ms_per_frame = 1000 / fps
@@ -1030,7 +1030,7 @@ print(" Created 'frame_time' column in eye_df")
 
 
 # ================================
-# 4️ ALIGN EYE GAZE DATA TO TYPING EVENTS
+# 4 ALIGN EYE GAZE DATA TO TYPING EVENTS
 # ================================
 #  Set frame_time as index
 eye_df = eye_df.set_index('frame_time').sort_index()
@@ -1061,7 +1061,7 @@ print(typing_with_eye.head())
 
 
 # ================================
-# 6️ SAVE FINAL MERGED CSV
+# 6 SAVE FINAL MERGED CSV
 # ================================
 output_path = '/content/typing_with_eye_alignment.csv'
 typing_with_eye.to_csv(output_path, index=False)
@@ -1483,7 +1483,7 @@ typing_with_eye['combined_category'] = typing_with_eye['final_gaze_yaw'].apply(l
 
 #  Save to new CSV
 typing_with_eye.to_csv('/content/typing_with_combined_category.csv', index=False)
-print("\n✅ Saved new CSV with combined_category column!")
+print("\n Saved new CSV with combined_category column!")
 
 #  Show distribution
 print("\n Distribution of combined_category:")
@@ -1743,14 +1743,14 @@ print(top10.to_string(index=False))
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# ✅ Load data
+#  Load data
 df = pd.read_csv('/content/typing_with_combined_category.csv', parse_dates=['timestamp'])
-print(f"✅ Loaded {len(df)} rows")
+print(f" Loaded {len(df)} rows")
 
-# ✅ Sort by time
+#  Sort by time
 df = df.sort_values('timestamp').reset_index(drop=True)
 
-# ✅ Function to compute total looking time for a category
+#  Function to compute total looking time for a category
 def compute_total_looking_time(category_name):
     category_df = df[df['combined_category'] == category_name]
     if category_df.empty:
@@ -1768,17 +1768,17 @@ def compute_total_looking_time(category_name):
             total_time += duration
     return total_time
 
-# ✅ Compute times
+#  Compute times
 keyboard_time = compute_total_looking_time('center')
 screen_time = compute_total_looking_time('right')
 total_typing_time = keyboard_time + screen_time
 
-print("\n✅ TOTAL TIME (seconds):")
+print("\n TOTAL TIME (seconds):")
 print(f"Keyboard-looking (center): {keyboard_time:.2f} seconds")
 print(f"Screen-looking (right): {screen_time:.2f} seconds")
 print(f"Total typing session time (sum): {total_typing_time:.2f} seconds")
 
-# ✅ Pie chart
+#  Pie chart
 labels = ['Keyboard-looking (center)', 'Screen-looking (right)']
 sizes = [keyboard_time, screen_time]
 colors = ['lightcoral', 'lightskyblue']
