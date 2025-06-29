@@ -25,6 +25,7 @@ It answers questions like:
 - Characters typed while looking at keyboard vs. screen
 - Letters hardest to find without looking
 - Total time spent looking at keyboard vs. screen
+  
 ✅ Visualize results with charts and images
 
 ---
